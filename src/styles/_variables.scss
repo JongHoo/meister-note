@@ -1,0 +1,61 @@
+// =============================================================================
+// Variables
+// =============================================================================
+
+// Colors
+// -----------------------------------------------------------------------------
+$primary-color: #1677ff;
+$success-color: #52c41a;
+$warning-color: #faad14;
+$error-color: #ff4d4f;
+
+// Text Colors
+$text-color: rgba(0, 0, 0, 0.88);
+$text-color-secondary: rgba(0, 0, 0, 0.65);
+$text-color-disabled: rgba(0, 0, 0, 0.25);
+
+// Background Colors
+$bg-color: #ffffff;
+$bg-color-secondary: #fafafa;
+
+// Border
+$border-color: #d9d9d9;
+$border-radius: 6px;
+
+// Spacing
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+
+// Font
+$font-family:
+  -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+  Arial, 'Noto Sans', sans-serif;
+$font-size-base: 14px;
+$font-size-sm: 12px;
+$font-size-lg: 16px;
+
+// Breakpoints
+$breakpoint-xs: 480px;
+$breakpoint-sm: 576px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 992px;
+$breakpoint-xl: 1200px;
+$breakpoint-xxl: 1600px;
+
+// Shadows
+$shadow-sm:
+  0 1px 2px 0 rgba(0, 0, 0, 0.03),
+  0 1px 6px -1px rgba(0, 0, 0, 0.02),
+  0 2px 4px 0 rgba(0, 0, 0, 0.02);
+$shadow-md:
+  0 6px 16px 0 rgba(0, 0, 0, 0.08),
+  0 3px 6px -4px rgba(0, 0, 0, 0.12),
+  0 9px 28px 8px rgba(0, 0, 0, 0.05);
+
+// Z-index
+$z-index-dropdown: 1050;
+$z-index-modal: 1000;
+$z-index-tooltip: 1070;
