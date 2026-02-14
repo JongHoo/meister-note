@@ -1,8 +1,9 @@
-import { Layout, Menu, type MenuProps } from 'antd'
+import { Layout, Menu, theme, type MenuProps } from 'antd'
 import { DashboardOutlined, ToolOutlined } from '@ant-design/icons'
 import { useNavigate, useRouterState } from '@tanstack/react-router'
 
-const { Sider, Content } = Layout
+const { Header, Content } = Layout
+const { useToken } = theme
 
 type MenuItem = Required<MenuProps>['items'][number]
 
@@ -24,6 +25,7 @@ type AppLayoutProps = {
 }
 
 export const AppLayout = ({ children }: AppLayoutProps) => {
+  const { token } = useToken()
   const navigate = useNavigate()
   const routerState = useRouterState()
   const currentPath = routerState.location.pathname
@@ -34,51 +36,48 @@ export const AppLayout = ({ children }: AppLayoutProps) => {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider
-        theme="light"
-        width={240}
+      <Header
         style={{
-          borderRight: '1px solid #f0f0f0',
+          display: 'flex',
+          alignItems: 'center',
+          paddingInline: 24,
+          background: token.colorBgContainer,
+          borderBottom: `1px solid ${token.colorBorder}`,
         }}
       >
-        <div
+        <h1
           style={{
-            height: 64,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderBottom: '1px solid #f0f0f0',
+            margin: 0,
+            marginRight: 32,
+            fontSize: 20,
+            fontWeight: 600,
+            color: token.colorPrimary,
+            flexShrink: 0,
           }}
         >
-          <h1
-            style={{
-              margin: 0,
-              fontSize: 20,
-              fontWeight: 600,
-              color: '#1677ff',
-            }}
-          >
-            Meister Note
-          </h1>
-        </div>
+          Meister Note
+        </h1>
         <Menu
-          mode="inline"
+          mode="horizontal"
           selectedKeys={[currentPath]}
           items={menuItems}
           onClick={onMenuClick}
-          style={{ borderRight: 0 }}
-        />
-      </Sider>
-      <Layout>
-        <Content
           style={{
-            padding: 24,
-            background: '#fff',
+            flex: 1,
+            minWidth: 0,
+            borderBottom: 'none',
+            background: 'transparent',
           }}
-        >
-          {children}
-        </Content>
-      </Layout>
+        />
+      </Header>
+      <Content
+        style={{
+          padding: 24,
+          background: token.colorBgContainer,
+        }}
+      >
+        {children}
+      </Content>
     </Layout>
   )
 }

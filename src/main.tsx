@@ -1,12 +1,13 @@
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
+import { ConfigProvider } from 'antd'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
 import { QueryProvider } from './providers/QueryProvider'
+import { navyDarkTheme } from './theme/navyDark'
 
-import './styles.css'
 import './styles/global.scss'
 import reportWebVitals from './reportWebVitals.ts'
 
@@ -33,9 +34,11 @@ if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>
-      <QueryProvider>
-        <RouterProvider router={router} />
-      </QueryProvider>
+      <ConfigProvider theme={navyDarkTheme}>
+        <QueryProvider>
+          <RouterProvider router={router} />
+        </QueryProvider>
+      </ConfigProvider>
     </StrictMode>,
   )
 }
