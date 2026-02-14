@@ -1,12 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
-import { Table, Tag, Space, Typography } from 'antd'
+import { Table, Tag, Space } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 import { getMaintenances } from '@/api/client'
-import type { Maintenances, MaintenanceDetail, Customers } from '@/types'
+import type { Maintenances, MaintenanceDetail } from '@/types'
 import { toDateString } from '@/utils/to'
-
-const { Title } = Typography
 
 const statusColorMap: Record<Maintenances['status'], string> = {
   RECEIVED: 'blue',
@@ -141,9 +139,6 @@ const MaintenancePage = () => {
 
   return (
     <div>
-      <Title level={2} style={{ marginBottom: 16 }}>
-        정비 이력
-      </Title>
       <Table
         size="small"
         columns={columns}
