@@ -1,10 +1,14 @@
+import { useState, useMemo } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
-import { Table, Tag, Space } from 'antd'
+import { Table, Tag, Space, Input, DatePicker, Button } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
+import dayjs from 'dayjs'
 import { getMaintenances } from '@/api/client'
 import type { Maintenances, MaintenanceDetail } from '@/types'
 import { toDateString } from '@/utils/to'
+
+const { RangePicker } = DatePicker
 
 const statusColorMap: Record<Maintenances['status'], string> = {
   RECEIVED: 'blue',
@@ -27,11 +31,56 @@ const paymentMethodLabelMap: Record<Maintenances['payment_method'], string> = {
   OTHER: '기타',
 }
 
+type DateRangeValue = [dayjs.Dayjs | null, dayjs.Dayjs | null] | null
+
+type SearchFilters = {
+  name: string
+  dateRange: DateRangeValue
+}
+
 const MaintenancePage = () => {
   const { data: maintenances, isLoading } = useQuery({
     queryKey: ['maintenances'],
     queryFn: getMaintenances,
   })
+
+  const [nameInput, setNameInput] = useState('')
+  const [dateRangeInput, setDateRangeInput] = useState<DateRangeValue>(null)
+  const [appliedFilters, setAppliedFilters] = useState<SearchFilters>({
+    name: '',
+    dateRange: null,
+  })
+
+  const filteredData = useMemo(() => {
+    if (!maintenances) return []
+    return maintenances.filter((row) => {
+      const matchesName =
+        !appliedFilters.name ||
+        row.customers.name
+          .toLowerCase()
+          .includes(appliedFilters.name.trim().toLowerCase())
+      if (!matchesName) return false
+
+      const [start, end] = appliedFilters.dateRange ?? [null, null]
+      if (start && end) {
+        const received = dayjs(row.received_at)
+        const inRange =
+          (start.startOf('day').isBefore(received) ||
+            start.startOf('day').isSame(received, 'day')) &&
+          (end.endOf('day').isAfter(received) ||
+            end.endOf('day').isSame(received, 'day'))
+        if (!inRange) return false
+      }
+      return true
+    })
+  }, [maintenances, appliedFilters])
+
+  const onSearchClick = () => {
+    setAppliedFilters({
+      name: nameInput.trim(),
+      dateRange: dateRangeInput,
+    })
+  }
 
   const columns: ColumnsType<Maintenances> = [
     {
@@ -139,10 +188,54 @@ const MaintenancePage = () => {
 
   return (
     <div>
+      <Space
+        wrap
+        align="center"
+        style={{ marginBottom: 16 }}
+        size="middle"
+        aria-label="검색 영역"
+      >
+        <Space size="small" align="center">
+          <label
+            htmlFor="maintenance-search-name"
+            style={{ whiteSpace: 'nowrap' }}
+          >
+            이름
+          </label>
+          <Input
+            id="maintenance-search-name"
+            placeholder="이름 검색"
+            value={nameInput}
+            onChange={(e) => setNameInput(e.target.value)}
+            onPressEnter={onSearchClick}
+            allowClear
+            style={{ width: 160 }}
+            aria-label="이름 검색"
+          />
+        </Space>
+        <Space size="small" align="center">
+          <label
+            htmlFor="maintenance-search-date"
+            style={{ whiteSpace: 'nowrap' }}
+          >
+            접수일
+          </label>
+          <RangePicker
+            id="maintenance-search-date"
+            value={dateRangeInput}
+            onChange={(dates) => setDateRangeInput(dates)}
+            style={{ width: 240 }}
+            aria-label="접수일 범위 선택"
+          />
+        </Space>
+        <Button type="primary" onClick={onSearchClick} aria-label="검색">
+          검색
+        </Button>
+      </Space>
       <Table
         size="small"
         columns={columns}
-        dataSource={maintenances}
+        dataSource={filteredData}
         loading={isLoading}
         rowKey="id"
         pagination={{
