@@ -7,6 +7,7 @@ import dayjs from 'dayjs'
 import { getMaintenances } from '@/api/client'
 import type { Maintenances, MaintenanceDetail } from '@/types'
 import { toDateString } from '@/utils/to'
+import { MaintenanceDetailModal } from '../components/maintenance/MaintenanceDetailModal'
 
 const { RangePicker } = DatePicker
 
@@ -50,6 +51,8 @@ const MaintenancePage = () => {
     name: '',
     dateRange: null,
   })
+  const [selectedRow, setSelectedRow] = useState<Maintenances | null>(null)
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
 
   const filteredData = useMemo(() => {
     if (!maintenances) return []
@@ -80,6 +83,16 @@ const MaintenancePage = () => {
       name: nameInput.trim(),
       dateRange: dateRangeInput,
     })
+  }
+
+  const onRowDetailClick = (record: Maintenances) => {
+    setSelectedRow(record)
+    setIsDetailModalOpen(true)
+  }
+
+  const onDetailModalCloseClick = () => {
+    setIsDetailModalOpen(false)
+    setSelectedRow(null)
   }
 
   const columns: ColumnsType<Maintenances> = [
@@ -238,12 +251,31 @@ const MaintenancePage = () => {
         dataSource={filteredData}
         loading={isLoading}
         rowKey="id"
+        onRow={(record) => ({
+          onClick: () => onRowDetailClick(record),
+          onKeyDown: (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault()
+              onRowDetailClick(record)
+            }
+          },
+          tabIndex: 0,
+          'aria-label': `${record.customers.name} 정비 내역 상세 보기`,
+        })}
         pagination={{
           pageSize: 10,
           showSizeChanger: true,
           showTotal: (total) => `총 ${total}건`,
         }}
         scroll={{ x: 1200 }}
+      />
+      <MaintenanceDetailModal
+        open={isDetailModalOpen}
+        maintenance={selectedRow}
+        statusColorMap={statusColorMap}
+        statusLabelMap={statusLabelMap}
+        paymentMethodLabelMap={paymentMethodLabelMap}
+        onCloseClick={onDetailModalCloseClick}
       />
     </div>
   )
